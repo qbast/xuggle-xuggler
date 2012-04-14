@@ -115,6 +115,7 @@ namespace com { namespace xuggle { namespace xuggler
     
     static VideoPicture* make(com::xuggle::ferry::IBuffer* buffer,
         IPixelFormat::Type format, int width, int height);
+    bool isInterlaced() { return mFrame->interlaced_frame; }
 
   protected:
     VideoPicture();

@@ -268,6 +268,12 @@ namespace com { namespace xuggle { namespace xuggler
     static IVideoPicture* make(
         com::xuggle::ferry::IBuffer* buffer,
         IPixelFormat::Type format, int width, int height);
+    
+    /**
+     * @return True if the picture is interlaced, false if not.
+     */
+     virtual bool isInterlaced()=0;
+
 
   protected:
     IVideoPicture();

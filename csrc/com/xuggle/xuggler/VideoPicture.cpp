@@ -252,6 +252,7 @@ namespace com { namespace xuggle { namespace xuggler
               (PixelFormat)frame->format, frame->width, frame->height);
         }
         mFrame->key_frame = frame->key_frame;
+        mFrame->interlaced_frame = frame->interlaced_frame;
       }
       else
       {
