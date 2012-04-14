@@ -45,6 +45,9 @@ static struct ErrorMappingTable sErrorMappingTable[] = {
     { AVERROR(EIO),         IError::ERROR_IO },
     { AVERROR(EDOM),        IError::ERROR_NUMEXPECTED },
     { AVERROR(EINVAL),      IError::ERROR_INVALIDDATA },
+#ifdef AVERROR_INVALIDDATA
+    { AVERROR_INVALIDDATA,  IError::ERROR_INVALIDDATA },
+#endif 	
     { AVERROR(ENOMEM),      IError::ERROR_NOMEM },
     { AVERROR(EILSEQ),      IError::ERROR_NOFMT },
     { AVERROR(ENOSYS),      IError::ERROR_NOTSUPPORTED },
