@@ -481,6 +481,11 @@ namespace com { namespace xuggle { namespace xuggler
      * this method will reallocate the underlying buffers to
      * make them at least 192kbytes.
      * </p>
+     *
+     * Also, when done in order to flush the decoder, caller should call
+     * this method passing in 0 (null) for packet to tell the decoder
+     * to flush any data it was keeping a hold of.
+     *
      * @param pOutSamples The AudioSamples we decode to
      * @param packet    The packet we're attempting to decode from.
      * @param byteOffset Where in the packet payload to start decoding
