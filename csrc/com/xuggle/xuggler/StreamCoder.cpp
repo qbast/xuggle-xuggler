@@ -939,6 +939,9 @@ StreamCoder::decodeAudio(IAudioSamples *pOutSamples, IPacket *pPacket,
         avcodec_get_frame_defaults(&frame);
 
         retval = avcodec_decode_audio4(mCodecContext, &frame, &got_frame, &pkt);
+
+        if (!got_frame) outBufSize = 0;
+        
         // the API for decoding audio changed ot support planar audio and we
         // need to back-port
         if (retval >= 0 && got_frame) {
