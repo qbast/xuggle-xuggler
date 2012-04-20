@@ -504,6 +504,10 @@ namespace com { namespace xuggle { namespace xuggler
      * you should pass the same IVideoPicture into this function
      * repeatedly until IVideoPicture::isComplete() is true.
      *
+     * Also, when done in order to flush the decoder, caller should call
+     * this method passing in 0 (null) for packet to tell the decoder
+     * to flush any data it was keeping a hold of.
+     *
      * @param pOutFrame The AudioSamples we decode.
      * @param packet    The packet we're attempting to decode from.
      * @param byteOffset Where in the packet payload to start decoding

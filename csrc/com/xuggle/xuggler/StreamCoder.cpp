@@ -1083,10 +1083,6 @@ StreamCoder::decodeVideo(IVideoPicture *pOutFrame, IPacket *pPacket,
     VS_LOG_WARN("Attempting to decode when not ready; no frame");
     return retval;
   }
-  if (!packet) {
-    VS_LOG_WARN("Attempting to decode when not ready; no packet");
-    return retval;
-  }
   if (!mOpened) {
     VS_LOG_WARN("Attempting to decode when not ready; codec not opened");
     return retval;
@@ -1111,20 +1107,21 @@ StreamCoder::decodeVideo(IVideoPicture *pOutFrame, IPacket *pPacket,
   AVFrame *avFrame = avcodec_alloc_frame();
   if (avFrame)
   {
-    RefPointer<IBuffer> buffer = packet->getData();
     int frameFinished = 0;
     int32_t inBufSize = 0;
     uint8_t * inBuf = 0;
 
-    inBufSize = packet->getSize() - byteOffset;
+    if (packet) {
+      RefPointer<IBuffer> buffer = packet->getData();
+      inBufSize = packet->getSize() - byteOffset;
 
-    VS_ASSERT(buffer, "no buffer in packet?");
-    if (buffer)
-      inBuf = (uint8_t*) buffer->getBytes(byteOffset, inBufSize);
+      VS_ASSERT(buffer, "no buffer in packet?");
+      if (buffer)
+        inBuf = (uint8_t*) buffer->getBytes(byteOffset, inBufSize);
 
-    VS_ASSERT(inBuf, "incorrect size or no data in packet");
+      VS_ASSERT(inBuf, "incorrect size or no data in packet");
+    }
 
-    if (inBufSize > 0 && inBuf)
     {
       VS_LOG_TRACE("Attempting decodeVideo(%p, %p, %d, %p, %d);",
           mCodecContext,
@@ -1140,7 +1137,8 @@ StreamCoder::decodeVideo(IVideoPicture *pOutFrame, IPacket *pPacket,
       pkt.data = inBuf;
       pkt.size = inBufSize;
 
-      mCodecContext->reordered_opaque = packet->getPts();
+      if (packet) 
+        mCodecContext->reordered_opaque = packet->getPts();
       retval = avcodec_decode_video2(mCodecContext, avFrame, &frameFinished,
           &pkt);
       VS_LOG_TRACE("Finished %d decodeVideo(%p, %p, %d, %p, %d);",
@@ -1164,7 +1162,7 @@ StreamCoder::decodeVideo(IVideoPicture *pOutFrame, IPacket *pPacket,
         int64_t packetTs = avFrame->reordered_opaque;
         // if none, assume this packet's decode time, since
         // it's presentation time should have been in reordered_opaque
-        if (packetTs == Global::NO_PTS)
+        if (packet && packetTs == Global::NO_PTS)
           packetTs = packet->getDts();
 
         if (packetTs != Global::NO_PTS)
@@ -1180,7 +1178,7 @@ StreamCoder::decodeVideo(IVideoPicture *pOutFrame, IPacket *pPacket,
             // See: http://code.google.com/p/xuggle/issues/detail?id=165
             // in this way we enforce that timestamps are always
             // increasing
-            if (nextPts < mFakeNextPts && packet->getPts() != Global::NO_PTS)
+            if (packet && nextPts < mFakeNextPts && packet->getPts() != Global::NO_PTS)
               nextPts = mFakePtsTimeBase->rescale(packet->getPts(),
                   timeBase.value());
             mFakeNextPts = nextPts;
